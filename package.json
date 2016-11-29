@@ -1,0 +1,36 @@
+{
+  "name": "notes",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www --harmony",
+    "build": "babel es2015 -d .",
+    "start-fs": "NOTES_MODEL=models/notes-fs node ./bin/www",
+    "start-levelup": "NOTES_MODEL=models/notes-levelup node ./bin/www",
+    "sqlite3-setup": "sqlite3 notes.sqlite3 --init models/schema-sqlite3.sql",
+    "start-sequelize-mysql": "SEQUELIZE_CONNECT=models/sequelize-mysql.yaml NOTES_MODEL=models/notes-sequelize node ./bin/www",
+    "start-mongodb": "MONGO_URL=mongodb://localhost/notes NOTES_MODEL=models/notes-mongodb node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.15.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "ejs": "~2.5.2",
+    "express": "~4.14.0",
+    "file-stream-rotator": "0.0.7",
+    "fs-extra": "^1.0.0",
+    "js-yaml": "^3.7.0",
+    "leveldown": "^1.5.0",
+    "levelup": "^1.3.3",
+    "mongodb": "^2.2.11",
+    "morgan": "~1.7.0",
+    "mysql": "^2.12.0",
+    "sequelize": "^3.27.0",
+    "serve-favicon": "~2.3.0",
+    "sqlite3": "^3.1.8"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0"
+  }
+}

@@ -92,13 +92,15 @@ exports.destroy = function(key) {
 };
 
 exports.keylist = function() {
-    return exports.connectDB().then(SQNote => {
-        return SQNote.findAll({ attributes: [ 'notekey' ] })
-            .then(notes => {
-                return notes.map(note => note.notekey);
-            });
+    return exports.connectDB()
+        .then(SQNote => {
+            return SQNote.findAll({ attributes: [ 'notekey' ] })
+                .then(notes => {
+                    return notes.map(note => note.notekey);
+        });
     });
 };
+
 
 exports.count = function() {
     return exports.connectDB().then(SQNote => {

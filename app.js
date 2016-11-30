@@ -6,9 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var FileStreamRotator = require('file-stream-rotator');
 var error = require('debug')('notes:error');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 var index = require('./routes/index');
-//var users = require('./routes/users');
+var users = require('./routes/users');
 var notes = require('./routes/notes');
 
 var app = express();
@@ -54,6 +56,13 @@ app.use(function(err, req, res, next) {
     });
 });
 
+app.use(session({
+    store: new FileStore({ path: "sessions"}),
+    secret: 'keyboard mouse', resave: true, saveUninitialized: true
+}));
+
+users.initPassport(app);
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger(process.env.REQUEST_LOG_FORMAT || 'dev', { stream: accessLogStream ? accessLogStream:process.stdout }));
@@ -63,7 +72,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-//app.use('/users', users);
+app.use('/users', users.router);
 app.use('/notes', notes);
 
 // catch 404 and forward to error handler

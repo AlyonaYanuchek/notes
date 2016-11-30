@@ -1,43 +1,67 @@
-var express = require('express');
-var router = express.Router();
+'use strict';
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+const path = require('path');
+const log = require('debug')('notes:router-users');
+const error = require('debug')('notes:error');
+const express = require('express');
+const router = express.Router();
+exports.router = router;
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const usersModel = require(process.env.USERS_MODEL ? path.join('..', process.env.USERS_MODEL) : '../models/users-rest');
+
+exports.initPassport = function(app){
+    app.use(passport.initialize());
+    app.use(passport.session());
+};
+
+exports.ensureAuthenticated = function(req, res, next){
+    if(req.user) next();
+    else res.redirect('/users/login');
+};
+
+router.get('/login', function(req, res, next){
+    // log(util.inspect(req));
+    res.render('login', {
+        title: "Login to Notes",
+        user: req.user
+    });
 });
 
-router.get('/add', (req, res, next) => {
-  res.render('noteedit',{
-    title: "Add a Note",
-    docreate: true,
-    notekey: "",
-    note: undefined
-  });
+router.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: 'login'
+    })
+);
+
+router.get('/logout', function(req, res, next){
+    req.logout();
+    res.redirect('/');
 });
 
-router.post('/save', (req, res, next) => {
-  var p;
-  if(req.body.docreate === "create"){
-    p = notes.create(req.body.notekey, req.body.title, req.body.body);
-  } else{
-    p = notes.update(req.body.notekey, req.body.title, req.body.body);
-  }
-  p.then(note => {
-        res.redirect('/notes/view?key=' + req.body.notekey);
-      })
-      .catch(err => { next(err); });
+passport.use(new LocalStrategy(
+    function(username, password, done){
+        usersModel.userPasswordCheck(username, password)
+        .then(check => {
+                if (check.check) {
+                    done(null, { id: check.username,
+                                username: check.username });
+                } else {
+                    done(null, false, check.message);
+                }
+            return check;
+            })
+            .check(err => done(err));
+    }
+));
+
+passport.serializeUser(function(user, done){
+    done(null, user.username);
 });
 
-router.get('/view', (req, res, next) => {
-  notes.read(req.query.key)
-      .then(note => {
-        res.render('noteview', {
-          title: note ? note.title : "",
-          notekey: req.query.key,
-          note: note
-        });
-      })
-      .catch(err => { next(err); });
+passport.deserializeUser(function(username, done){
+    usersModel.find(username)
+    .then(user => done(null, user))
+    .catch(err => done(err));
 });
-
-module.exports = router;

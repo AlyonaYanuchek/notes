@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www --harmony",
+    "start": "SEQUELIZE_CONNECT=models/sequelize-sqlite.yaml NOTES_MODEL=models/notes-sequelize USERS_MODEL=models/users-rest USER_SERVICE_URL=http://localhost:3333 node ./bin/www",
     "build": "babel es2015 -d .",
     "start-fs": "NOTES_MODEL=models/notes-fs node ./bin/www",
     "start-levelup": "NOTES_MODEL=models/notes-levelup node ./bin/www",
@@ -17,6 +17,7 @@
     "debug": "~2.2.0",
     "ejs": "~2.5.2",
     "express": "~4.14.0",
+    "express-session": "^1.14.2",
     "file-stream-rotator": "0.0.7",
     "fs-extra": "^1.0.0",
     "js-yaml": "^3.7.0",
@@ -25,9 +26,12 @@
     "mongodb": "^2.2.11",
     "morgan": "~1.7.0",
     "mysql": "^2.12.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
     "restify": "^4.3.0",
     "sequelize": "^3.27.0",
     "serve-favicon": "~2.3.0",
+    "session-file-store": "^0.2.2",
     "sqlite3": "^3.1.8"
   },
   "devDependencies": {

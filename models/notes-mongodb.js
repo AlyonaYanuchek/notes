@@ -83,7 +83,7 @@ exports.keylist = function(){
 exports.count = function(){
     return exports.connectDB()
     .then(db => {
-        var collecion = db.collection('notes');
+        var collection = db.collection('notes');
         return new Promise((resolve, reject)=> {
             collection.count({},(err, count)=> {
                 if (err) reject(err);

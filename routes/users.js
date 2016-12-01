@@ -8,6 +8,7 @@ const router = express.Router();
 exports.router = router;
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
 const usersModel = require(process.env.USERS_MODEL ? path.join('..', process.env.USERS_MODEL) : '../models/users-rest');
 
 exports.initPassport = function(app){
@@ -52,7 +53,7 @@ passport.use(new LocalStrategy(
                 }
             return check;
             })
-            .check(err => done(err));
+        .catch(err => done(err));
     }
 ));
 
@@ -65,3 +66,20 @@ passport.deserializeUser(function(username, done){
     .then(user => done(null, user))
     .catch(err => done(err));
 });
+
+passport.use(new TwitterStrategy({
+    consumerKey: "xNOBTUqQbzVEdbgiiH1DbOjS8",
+    consumerSecret: "BFkfg2vCMf9rWzpD8GCTAiTQ72bEwRwRWLj2v2Vhtj6Y0a3r4o",
+    callbackURL: ""
+},
+function(token, tokenSecret, profile, done){
+    userModel.findOrCreate({
+       id: profile.username,  username: profile.username, password: "", provider: profile.provider, familyName: profile.displayName, givenName: "", middleName: "", photos: profile.photos, emails: profile.emails
+    })
+    .then(user => done(null, user))
+    .catch(err => done(err));
+    }
+));
+
+router.get('/auth/twitter', passport.authenticate('twitter'));
+router.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/users/login' }));

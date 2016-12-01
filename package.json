@@ -28,10 +28,13 @@
     "mysql": "^2.12.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
+    "passport.socketio": "^3.7.0",
     "restify": "^4.3.0",
     "sequelize": "^3.27.0",
     "serve-favicon": "~2.3.0",
     "session-file-store": "^0.2.2",
+    "socket.io": "^1.7.1",
     "sqlite3": "^3.1.8"
   },
   "devDependencies": {
